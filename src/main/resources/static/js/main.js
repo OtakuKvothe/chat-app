@@ -28,52 +28,53 @@ function connect(event) {
 
         stompClient.connect({}, onConnected, onError);
     }
-
     event.preventDefault();
 }
 
-function onConnected() {
 
-    //subscribe to oublic topic
+function onConnected() {
+    // Subscribe to the Public Topic
     stompClient.subscribe('/topic/public', onMessageReceived);
 
-    //tell your username to server
+    // Tell your username to the server
     stompClient.send("/app/chat.addUser",
         {},
         JSON.stringify({ sender: username, type: 'JOIN' })
-    );
+    )
+
     connectingElement.classList.add('hidden');
 }
 
+
 function onError(error) {
-    connectingElement.textContent = 'Could not connect to websocket server. Please refresh browser.';
-    connectingElement.getElementsByClassName.color = 'red';
+    console.log(error);
+    connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
+    connectingElement.style.color = 'red';
 }
 
+
 function sendMessage(event) {
-    console.log('sending message');
     var messageContent = messageInput.value.trim();
-    console.log(messageContent);
-    console.log(stompClient);
+    console.log('sending message');
     if (messageContent && stompClient) {
         var chatMessage = {
             sender: username,
-            content: messageInput,
+            content: messageInput.value,
             type: 'CHAT'
         };
-        stompClient.send("/app/chat.sendMessage",
-            {},
-            JSON.stringify(chatMessage)
-        );
+
+        stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
         messageInput.value = '';
     }
     event.preventDefault();
 }
 
+
 function onMessageReceived(payload) {
     var message = JSON.parse(payload.body);
 
     var messageElement = document.createElement('li');
+
     if (message.type === 'JOIN') {
         messageElement.classList.add('event-message');
         message.content = message.sender + ' joined!';
@@ -90,10 +91,10 @@ function onMessageReceived(payload) {
 
         messageElement.appendChild(avatarElement);
 
-        var userElement = document.createElement('span');
+        var usernameElement = document.createElement('span');
         var usernameText = document.createTextNode(message.sender);
-        userElement.appendChild(usernameText);
-        messageElement.appendChild(userElement);
+        usernameElement.appendChild(usernameText);
+        messageElement.appendChild(usernameElement);
     }
 
     var textElement = document.createElement('p');
@@ -106,14 +107,16 @@ function onMessageReceived(payload) {
     messageArea.scrollTop = messageArea.scrollHeight;
 }
 
+
 function getAvatarColor(messageSender) {
     var hash = 0;
     for (var i = 0; i < messageSender.length; i++) {
         hash = 31 * hash + messageSender.charCodeAt(i);
     }
+
     var index = Math.abs(hash % colors.length);
     return colors[index];
 }
 
-usernameForm.addEventListener('submit', connect, true);
-messageForm.addEventListener('submit', sendMessage, true);
+usernameForm.addEventListener('submit', connect, true)
+messageForm.addEventListener('submit', sendMessage, true)
