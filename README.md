@@ -5,5 +5,5 @@ ChatterBox is an end to end real-time text-messaging service made using websocke
 
 ## Screenshot
 <p justifyContent="space-between" >
-  <img src="src/main/resources/static/img/ss.PNG" width="600" /> 
+  <img src="src/main/resources/static/img/ss.PNG" width="1000" /> 
 </p>
